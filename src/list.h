@@ -7,22 +7,6 @@
 #include <stdint.h>
 #include "list_options.h"
 
-#if _WIN32 || _WIN64
-#if _WIN64
-#define PTR_SIZE 8
-#else
-#define PTR_SIZE 4
-#endif
-#endif
-
-#if __GNUC__
-#if __x86_64__ || __ppc64__
-#define PTR_SIZE 8
-#else
-#define PTR_SIZE 4
-#endif
-#endif
-
 #define ptr_value void*
 
 #define BYTE unsigned char
