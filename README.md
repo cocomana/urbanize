@@ -46,6 +46,21 @@ list_add(list, 10);
 list_destroy(list);
 ```
 
+```C
+typedef struct
+{
+    int x;
+} mystruct;
+
+ptr_list list = create_list(sizeof(mystruct));
+
+mystruct example;
+
+list_add(list, example);
+
+list_destroy(list);
+```
+
 Note that it is important to call `list_destroy()` when done using a list.
 
 When adding adding literals to a `char*` list, it is important to cast `char*` before the literal, or use the predefined `_S` macro.
