@@ -21,6 +21,27 @@
 ## Urbanize
 Urbanize is a library for creating dynamically allocated, type independent arrays in C. It works for primitive types, literals, and user-defined structures/psuedo classes.
 
+## Basic Example
+
+```C
+#include <stdio.h>
+
+#include "../src/list.h"
+
+int main()
+{
+    ptr_list basic_list = create_list(int);
+
+    list_add(basic_list, 5);
+
+    printf("Value: %d", list_at(basic_list, 0));
+
+    list_destroy(basic_list);
+
+    return 0;
+}
+```
+
 ## How to use
 
 Thourough documentation to every function can be found in the section `Exports`. For full examples see `test/list_tests.c`.
@@ -29,7 +50,7 @@ Thourough documentation to every function can be found in the section `Exports`.
 Simply use the built-in function to create a `list`
 
 ```C
-ptr_list list = create_list(sizeof($TYPE));
+ptr_list list = create_list($TYPE);
 ```
 
 `$TYPE` can be replaced with any primitive type or custom defined type.
@@ -38,27 +59,13 @@ ptr_list list = create_list(sizeof($TYPE));
 Here is where the real magic is done. No matter the type, use `list_add()` to add an item to your list. Both literals and variables can be used here.
 
 ```C
-ptr_list list = create_list(sizeof(int));
+ptr_list custom_list = create_list(mystruct);
 
-list_add(list, 5);
-list_add(list, 10);
+list_add(custom_list, create_mystruct(1,2));
 
-list_destroy(list);
-```
+printf("Value: %d", (list_at(custom_list, 0)).x);
 
-```C
-typedef struct
-{
-    int x;
-} mystruct;
-
-ptr_list list = create_list(sizeof(mystruct));
-
-mystruct example;
-
-list_add(list, example);
-
-list_destroy(list);
+list_destroy(custom_list);
 ```
 
 Note that it is important to call `list_destroy()` when done using a list.
@@ -77,8 +84,11 @@ int item = list_at(list, 0);
 You can easily loop through lists using the predefined `list_foreach()` function.
 
 ```C
-ptr_list list = create_list(sizeof(int));
-void func(ptr_list list, ptr_value value)
+ptr_list list = create_list(int);
+
+list_foreach(list, func);
+
+void func(ptr_list list, void* value)
 {
     printf("Value: %d", *(int*) value);
 }

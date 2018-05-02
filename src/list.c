@@ -4,101 +4,101 @@
 #include <string.h>
 #include <math.h>
 
-BYTE_ARRAY list_at(_this, int index)
+void* _list_index_ptr(ptr_list this_list, int index);
+
+void _list_set_blocks(ptr_list this_list, int blocks);
+void _list_expand_heap(ptr_list this_list, int blocks);
+void _list_reduce_heap(ptr_list this_list, int blocks);
+void _list_sanitize_heap(ptr_list this_list);
+
+void _heap_realloc(ptr_list this_list);
+
+void* list_at_ptr(ptr_list this_list, int index)
 {
-    if (index >= 0 && index < this->size) {
-        return (*(ptr_value*)(this->_heap_ptr + (this->_item_size * index)));
+    if (index >= 0 && index < this_list->size) {
+        return _list_index_ptr(this_list, index);
     } else {
         return 0;
     }
 }
 
-ptr_value list_at_ptr(_this, int index)
+void* _list_index_ptr(ptr_list this_list, int index)
 {
-    if (index >= 0 && index < this->size) {
-        return _list_index_ptr(this, index);
-    } else {
-        return 0;
-    }
+    return ((void**)(this_list->_heap_ptr + (this_list->_item_size * index)));
 }
 
-ptr_value _list_index_ptr(_this, int index)
+void list_add_ptr(ptr_list this_list, void* value)
 {
-    return ((ptr_value*)(this->_heap_ptr + (this->_item_size * index)));
+    list_add_ptr_at(this_list, value, this_list->size);
 }
 
-void list_add_ptr(_this, ptr_value value)
+void list_add_ptr_at(ptr_list this_list, void* value, int index)
 {
-    list_add_ptr_at(this, value, this->size);
-}
+    if (index >= 0 && index <= this_list->size) {
+        this_list->size++;
 
-void list_add_ptr_at(_this, ptr_value value, int index)
-{
-    if (index >= 0 && index <= this->size) {
-        this->size++;
+        _list_sanitize_heap(this_list);
 
-        _list_sanitize_heap(this);
-
-        for(int i = this->size - 1; i > index; i--)
+        for(int i = this_list->size - 1; i > index; i--)
         {
-            list_set_ptr(this, i, list_at_ptr(this, i - 1));
+            list_set_ptr(this_list, i, list_at_ptr(this_list, i - 1));
         }
 
-        list_set_ptr(this, index, value);
+        list_set_ptr(this_list, index, value);
     }
 }
 
-void list_append_list(_this, ptr_list ptr_add_list)
+void list_append_list(ptr_list this_list, ptr_list ptr_add_list)
 {
-    list_append_list_at(this, ptr_add_list, this->size);
+    list_append_list_at(this_list, ptr_add_list, this_list->size);
 }
 
-void list_append_list_at(_this, ptr_list ptr_add_list, int index)
+void list_append_list_at(ptr_list this_list, ptr_list ptr_add_list, int index)
 {
-    if (index >= 0 && index <= this->size && this->_item_size == ptr_add_list->_item_size) {
-        _list_expand_heap(this, (int)(ptr_add_list->_heap_size/ptr_add_list->_options.heap_block_size));
+    if (index >= 0 && index <= this_list->size && this_list->_item_size == ptr_add_list->_item_size) {
+        _list_expand_heap(this_list, (int)(ptr_add_list->_heap_size/ptr_add_list->_options.heap_block_size));
 
-        ptr_value ptr_index = _list_index_ptr(this, index);
+        void* ptr_index = _list_index_ptr(this_list, index);
         size_t distance = ptr_add_list->_item_size * ptr_add_list->size;
-        size_t size_copy = (this->size - index) * this->_item_size;
+        size_t size_copy = (this_list->size - index) * this_list->_item_size;
 
-        memcpy((ptr_value)(ptr_index + (int)distance), ptr_index, size_copy);
+        memcpy((void*)(ptr_index + (int)distance), ptr_index, size_copy);
         memcpy(ptr_index, ptr_add_list->_heap_ptr, distance);
 
-        this->size += ptr_add_list->size;
+        this_list->size += ptr_add_list->size;
 
-        _list_sanitize_heap(this);
+        _list_sanitize_heap(this_list);
     }
 }
 
-void list_remove(_this)
+void list_remove(ptr_list this_list)
 {
-    list_remove_at(this, this->size-1);
+    list_remove_at(this_list, this_list->size-1);
 }
 
-void list_remove_at(_this, int index)
+void list_remove_at(ptr_list this_list, int index)
 {
-    if (index >= 0 && index < this->size) {
-        for(int i = index; i < this->size - 1; i++)
+    if (index >= 0 && index < this_list->size) {
+        for(int i = index; i < this_list->size - 1; i++)
         {
-            list_set_ptr(this, i, list_at_ptr(this, i + 1));
+            list_set_ptr(this_list, i, list_at_ptr(this_list, i + 1));
         }
 
-        this->size--;
+        this_list->size--;
 
-        _list_sanitize_heap(this);
+        _list_sanitize_heap(this_list);
     }
 }
 
-ptr_list list_sub(_this, int from, int to)
+ptr_list list_sub(ptr_list this_list, int from, int to)
 {
-    if (from >= 0 && from < this->size && to > from && to < this->size) {
-        ptr_list list = create_list_ex(this->_options);
+    if (from >= 0 && from < this_list->size && to > from && to < this_list->size) {
+        ptr_list list = create_list_ex(this_list->_options);
         list->size = (to + 1) - from;
 
         _list_sanitize_heap(list);
 
-        ptr_value start = _list_index_ptr(this, from);
+        void* start = _list_index_ptr(this_list, from);
         size_t size = list->_item_size * list->size;
 
         memcpy(list->_heap_ptr, start, size);
@@ -108,34 +108,34 @@ ptr_list list_sub(_this, int from, int to)
     return 0;
 }
 
-ptr_list list_split(_this, int index)
+ptr_list list_split(ptr_list this_list, int index)
 {
-    if (index >= 0 && index < this->size) {
-        ptr_list list = create_list_ex(this->_options);
-        list->size = this->size - index;
+    if (index >= 0 && index < this_list->size) {
+        ptr_list list = create_list_ex(this_list->_options);
+        list->size = this_list->size - index;
 
         _list_sanitize_heap(list);
 
-        ptr_value start = _list_index_ptr(this, index);
+        void* start = _list_index_ptr(this_list, index);
         size_t size = list->_item_size * list->size;
 
         memcpy(list->_heap_ptr, start, size);
 
-        this->size -= list->size;
+        this_list->size -= list->size;
 
-        _list_sanitize_heap(this);
+        _list_sanitize_heap(this_list);
 
         return list;
     }
     return 0;
 }
 
-int list_index_of_ptr(_this, ptr_value value)
+int list_index_of_ptr(ptr_list this_list, void* value)
 {
     int index = -1;
-    for (int i = 0; i < this->size; i++)
+    for (int i = 0; i < this_list->size; i++)
     {
-        if ((memcmp(list_at_ptr(this, i), value, this->_item_size) == 0))
+        if ((memcmp(list_at_ptr(this_list, i), value, this_list->_item_size) == 0))
         {
             index = i;
             break;
@@ -145,12 +145,12 @@ int list_index_of_ptr(_this, ptr_value value)
     return index;
 }
 
-int list_last_index_of_ptr(_this, ptr_value value)
+int list_last_index_of_ptr(ptr_list this_list, void* value)
 {
     int index = -1;
-    for (int i = this->size - 1; i >= 0; i--)
+    for (int i = this_list->size - 1; i >= 0; i--)
     {
-        if ((memcmp(list_at_ptr(this, i), value, this->_item_size) == 0))
+        if ((memcmp(list_at_ptr(this_list, i), value, this_list->_item_size) == 0))
         {
             index = i;
             break;
@@ -160,66 +160,76 @@ int list_last_index_of_ptr(_this, ptr_value value)
     return index;
 }
 
-void list_set_ptr(_this, int index, ptr_value value)
+void list_set_ptr(ptr_list this_list, int index, void* value)
 {
-    if (index >= 0 && index < this->size) {
-        memcpy(((ptr_value *)(this->_heap_ptr + (this->_item_size * index))), value, this->_item_size);
+    if (index >= 0 && index < this_list->size) {
+        memcpy(((void* *)(this_list->_heap_ptr + (this_list->_item_size * index))), value, this_list->_item_size);
     }
 }
 
-void _list_set_blocks(_this, int blocks)
+void _heap_realloc(ptr_list this_list)
 {
-    this->_heap_size = (this->_options.heap_block_size * blocks);
-    this->_heap_ptr = realloc(this->_heap_ptr, this->_heap_size * this->_item_size);
+    void* tmp = realloc(this_list->_heap_ptr, this_list->_heap_size * this_list->_item_size);
+    if (tmp) {
+        this_list->_heap_ptr = tmp;
+    } else {
+        printf("ERR: list could not be reallocated!");
+    }
 }
 
-void _list_expand_heap(_this, int blocks)
+void _list_set_blocks(ptr_list this_list, int blocks)
 {
-    this->_heap_size += (this->_options.heap_block_size * blocks);
-    this->_heap_ptr = realloc(this->_heap_ptr, this->_heap_size * this->_item_size);
+    this_list->_heap_size = (this_list->_options.heap_block_size * blocks);
+    _heap_realloc(this_list);
 }
 
-void _list_reduce_heap(_this, int blocks)
+void _list_expand_heap(ptr_list this_list, int blocks)
 {
-    this->_heap_size -= (this->_options.heap_block_size * blocks);
-    this->_heap_ptr = realloc(this->_heap_ptr, this->_heap_size * this->_item_size);
+    this_list->_heap_size += (this_list->_options.heap_block_size * blocks);
+    _heap_realloc(this_list);
 }
 
-void _list_sanitize_heap(_this)
+void _list_reduce_heap(ptr_list this_list, int blocks)
 {
-    int block_count = (int) this->_heap_size / (int) this->_options.heap_block_size;
-    int optimal_block_count = (int)((((int)this->_heap_size - (double)this->size) / (double)this->_options.heap_block_size));
+    this_list->_heap_size -= (this_list->_options.heap_block_size * blocks);
+    _heap_realloc(this_list);
+}
 
-    if ((this->size % 10) < 5) optimal_block_count++;
+void _list_sanitize_heap(ptr_list this_list)
+{
+    int block_count = (int) this_list->_heap_size / (int) this_list->_options.heap_block_size;
+    int optimal_block_count = (int)((((int)this_list->_heap_size - (double)this_list->size) / (double)this_list->_options.heap_block_size));
+
+    if ((this_list->size % 10) < 5) optimal_block_count++;
 
     if (block_count != optimal_block_count) {
-        _list_set_blocks(this, optimal_block_count);
+        _list_set_blocks(this_list, optimal_block_count);
     }
 }
 
-void list_foreach(_this, foreach_run run)
+void list_foreach(ptr_list this_list, foreach_run run)
 {
-    for(int i = 0; i < this->size; i++)
+    for(int i = 0; i < this_list->size; i++)
     {
-        run(this, list_at_ptr(this, i));
+        run(this_list, list_at_ptr(this_list, i));
     }
 }
 
-void list_clear(_this)
+void list_clear(ptr_list this_list)
 {
-    this->size = 0;
+    this_list->size = 0;
 
-    _list_set_blocks(this, 1);
+    _list_set_blocks(this_list, 1);
 }
 
-void list_destroy(_this)
+void list_destroy(ptr_list this_list)
 {
-    free(this->_heap_ptr);
-    free((void*) this);
+    free(this_list->_heap_ptr);
+    free((void*) this_list);
 }
 
 // Creates the default options and creates a new list
-ptr_list create_list(size_t item_size)
+ptr_list create_list_size(size_t item_size)
 {
     list_options options;
     options.heap_block_size = 10;

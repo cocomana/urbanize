@@ -21,13 +21,13 @@ int gcf(int a, int b) {
     return 1;
 }
 
-void calculate(ptr_list list, ptr_value value)
+void calculate(ptr_list list, void* value)
 {
     ptr_num_pair pair = (ptr_num_pair)value;
     printf("X: %d; Y: %d; LCM: %d; GCF: %d;\n", pair->x, pair->y, lcm(pair->x, pair->y), gcf(pair->x, pair->y));
 }
 
-void print_all_strings(ptr_list list, ptr_value value)
+void print_all_strings(ptr_list list, void* value)
 {
     char* string = *(char**)value;
     printf("String: %s\n", string);
@@ -47,8 +47,8 @@ int main()
 {
     // GCF and LCM
     printf("\nGCF and LCM: \n");
-    ptr_list list = create_list(sizeof(num_pair));
-    ptr_list list2 = create_list(sizeof(num_pair));
+    ptr_list list = create_list(num_pair);
+    ptr_list list2 = create_list(num_pair);
 
     list_add(list, create_num_pair(5,10)); // Removed
     list_add(list, create_num_pair(4,12));
@@ -69,12 +69,12 @@ int main()
 
     // Examples of primitives: Strings
     printf("\nStrings:\n");
-    list = create_list(sizeof(char*));
+    list = create_list(char*);
 
-    list_add(list, _S"This is a string");
-    list_add(list, _S"This is a second string");
-    list_add(list, _S"This is a third string");
-    list_add(list, _S"This is a fourth string");
+    list_add(list, (char*)"This is a string");
+    list_add(list, (char*)"This is a second string");
+    list_add(list, (char*)"This is a third string");
+    list_add(list, (char*)"This is a fourth string");
 
     list_foreach(list, print_all_strings);
 
@@ -99,7 +99,7 @@ int main()
 
     // Examples of primitives: Integers
     printf("\nIntegers:\n");
-    list = create_list(sizeof(int));
+    list = create_list(int);
 
     list_add(list, 10);
     list_add(list, 55);
@@ -108,11 +108,11 @@ int main()
 
     list_set(list, 1, 16);
 
-    printf("First number: %d\nSecond number: %d\nThird number: %d\nFourth number: %d\n", list_at(list, 0), list_at(list, 1), list_at(list, 2), list_at(list, 3));
+    printf("First number: %d\nSecond number: %d\nThird number: %d\nFourth number: %d\n", list_at(list, 0, int), list_at(list, 1, int), list_at(list, 2, int), list_at(list, 3, int));
 
     ptr_list sub = list_sub(list, 0, 1);
 
-    printf("First number: %d\nSecond number: %d\n", list_at(sub, 0), list_at(sub, 1));
+    printf("First number: %d\nSecond number: %d\n", list_at(sub, 0, int), list_at(sub, 1, int));
 
     printf("Index of 16: %d", list_index_of(list, 16));
 
