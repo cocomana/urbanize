@@ -24,7 +24,7 @@ int main()
 
     list_add(custom_list, create_mystruct(1,2));
 
-    printf("Value: %d", (list_at(custom_list, 0)).x);
+    printf("Value: %d", (list_at(custom_list, 0, mystruct)).x);
 
     list_destroy(custom_list);
 

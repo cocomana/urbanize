@@ -34,7 +34,7 @@ int main()
 
     list_add(basic_list, 5);
 
-    printf("Value: %d", list_at(basic_list, 0));
+    printf("Value: %d", list_at(basic_list, 0, int));
 
     list_destroy(basic_list);
 
@@ -63,7 +63,7 @@ ptr_list custom_list = create_list(mystruct);
 
 list_add(custom_list, create_mystruct(1,2));
 
-printf("Value: %d", (list_at(custom_list, 0)).x);
+printf("Value: %d", (list_at(custom_list, 0, mystruct)).x);
 
 list_destroy(custom_list);
 ```
@@ -76,7 +76,7 @@ When adding adding literals to a `char*` list, it is important to cast `char*` b
 `list_at()` allows you access any item in an array at a given index
 
 ```C
-int item = list_at(list, 0);
+int item = list_at(list, 0, int);
 ```
 
 ### Looping
@@ -96,7 +96,7 @@ void func(ptr_list list, void* value)
 
 ## Exports
 
-* `list_at(ptr_list list, int index)` - Get a value from a list at the given `index`
+* `list_at(ptr_list list, int index, type)` - Get a value from a list at the given `index`
 * `list_at_ptr(ptr_list list, int index)` - Get a pointer to the value at the given `index`
 * `list_add_ptr(ptr_list list, ptr_value value)` - Add item to a list from a pointer (value will be copied)
 * `list_add_ptr_at(ptr_list list, ptr_value value, int index)` - Add item to a list from a pointer to the given `index` (value will be copied)
@@ -117,7 +117,8 @@ void func(ptr_list list, void* value)
 * `list_foreach(ptr_list list, foreach_run run)` - Runs a given function for all of the items in a list
 * `list_clear(ptr_list list)` - Clears all of the items in a list
 * `list_destroy(ptr_list list)` - **Important: this must be called when you are done using a list, ** deallocates the list and its heap
-* `create_list(size_t item_size)` - Creates a standard list
+* `create_list(type)` - Creates a standard list
+* `create_list_size(size_t item_size)` - Creates a standard list
 * `create_list_ex(list_options options)` - Creates a list with the given options
 
 ## Build

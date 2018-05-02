@@ -8,7 +8,7 @@ int main()
 
     list_add(basic_list, 5);
 
-    printf("Value: %d", list_at(basic_list, 0));
+    printf("Value: %d", list_at(basic_list, 0, int));
 
     list_destroy(basic_list);
 
