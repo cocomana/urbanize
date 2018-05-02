@@ -118,7 +118,8 @@ void func(ptr_list list, void* value)
 * `list_clear(ptr_list list)` - Clears all of the items in a list
 * `list_destroy(ptr_list list)` - **Important: this must be called when you are done using a list, ** deallocates the list and its heap
 * `create_list(type)` - Creates a standard list
-* `create_list_size(size_t item_size)` - Creates a standard list
+* `create_list_length(type, int length)` - Creates a standard list with the length `length`
+* `create_list_size(size_t item_size, int length)` - Creates a standard list
 * `create_list_ex(list_options options)` - Creates a list with the given options
 
 ## Build

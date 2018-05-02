@@ -229,11 +229,12 @@ void list_destroy(ptr_list this_list)
 }
 
 // Creates the default options and creates a new list
-ptr_list create_list_size(size_t item_size)
+ptr_list create_list_size(size_t item_size, int length)
 {
     list_options options;
     options.heap_block_size = 10;
     options.item_size = item_size;
+    options.size_start = length;
 
     return create_list_ex(options);
 }
@@ -249,7 +250,9 @@ ptr_list create_list_ex(list_options options)
     list->_heap_ptr = malloc(list->_options.heap_block_size * list->_item_size);
     list->_heap_size = list->_options.heap_block_size;
 
-    list->size = 0;
+    list->size = options.size_start;
+
+    _list_sanitize_heap(list);
 
     return list;
 }

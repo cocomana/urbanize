@@ -49,9 +49,10 @@ void list_foreach(ptr_list this_list, foreach_run run);
 void list_clear(ptr_list this_list);
 void list_destroy(ptr_list this_list);
 
-ptr_list create_list_size(size_t item_size);
+ptr_list create_list_size(size_t item_size, int length);
 ptr_list create_list_ex(list_options options);
 
-#define create_list(type)({create_list_size(sizeof(type));})
+#define create_list(type)({create_list_size(sizeof(type), 0);})
+#define create_list_length(type, length)({create_list_size(sizeof(type), length);})
 
 #endif //CDYNAMICARRAYS_LIST_H

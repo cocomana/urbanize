@@ -8,6 +8,8 @@ struct list_options
 {
     size_t heap_block_size;
     size_t item_size;
+
+    int size_start;
 };
 
 #endif //CDYNAMICARRAYS_TEST_LIST_OPTIONS_H
