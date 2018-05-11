@@ -21,7 +21,7 @@
 ## Urbanize
 Urbanize is a library for creating dynamically allocated, type independent arrays in C. It works for primitive types, literals, and user-defined structures/psuedo classes.
 
-## Basic Example
+## List Example
 
 ```C
 #include <stdio.h>
@@ -94,7 +94,7 @@ void func(ptr_list list, void* value)
 }
 ```
 
-## Exports
+## Methods
 
 * `list_at(ptr_list list, int index, type)` - Get a value from a list at the given `index`
 * `list_at_ptr(ptr_list list, int index)` - Get a pointer to the value at the given `index`
